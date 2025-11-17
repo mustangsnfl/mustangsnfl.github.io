@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Grand Haven Mustangs — Lions Season (Demo)</title>
+  <style>
+    :root{
+      --bg:#071018;
+      --card:#0f1720;
+      --glass: rgba(255,255,255,0.03);
+      --accent1: #76f0ff;
+      --accent2: #bfff4d;
+      --muted:#9aa6b2;
+      --glass-border: rgba(255,255,255,0.06);
+      --glow: 0 8px 30px rgba(118,240,255,0.06), 0 0 18px rgba(191,255,77,0.03);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(118,240,255,0.03), transparent 10%),
+        linear-gradient(180deg, rgba(0,0,0,0.25), transparent 30%),
+        var(--bg);
+      color:#e6eef5;
+      -webkit-font-smoothing:antialiased;
+      overflow-y:scroll;
+    }
+    .site-header{
+      position:sticky; top:0; z-index:40;
+      backdrop-filter: blur(8px) saturate(120%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-bottom: 1px solid var(--glass-border);
+      display:flex; align-items:center; gap:20px; padding:12px 20px;
+    }
+    .brand{display:flex; gap:14px; align-items:center}
+    .logo { width:64px;height:64px;border-radius:14px;padding:6px;background:linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); box-shadow: var(--glow); display:flex; align-items:center; justify-content:center; transition:transform .6s cubic-bezier(.2,.9,.2,1); border:1px solid rgba(255,255,255,0.04); }
+    .logo img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+    .logo:hover{transform:translateY(-6px) rotate(-4deg) scale(1.03);}
+    .site-title h1{font-size:20px; margin:0; letter-spacing:0.6px}
+    .site-title p{margin:0;color:var(--muted);font-size:12px}
+    .nav{margin-left:auto; display:flex; gap:10px}
+    .btn{border:1px solid rgba(255,255,255,0.06); padding:9px 12px; border-radius:10px; background:transparent; color:var(--muted); font-weight:600; cursor:pointer; transition:all .2s;}
+    .btn:hover{transform:translateY(-3px); color:var(--accent1); border-color:rgba(118,240,255,0.2)}
+    .hero{padding:36px 28px; display:grid; grid-template-columns: 1fr 360px; gap:28px; align-items:start;}
+    .hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:16px; padding:22px; border: 1px solid var(--glass-border); box-shadow: var(--glow); position:relative; overflow:hidden;}
+    .hero-card::before{content:''; position:absolute; right:-10%; top:-40%; width:500px;height:500px; background: radial-gradient(circle at 20% 20%, rgba(118,240,255,0.06), transparent 30%), conic-gradient(from 120deg at 50% 50%, rgba(191,255,77,0.03), rgba(118,240,255,0.03)); transform:rotate(18deg); filter:blur(20px); opacity:.9; animation:float 8s ease-in-out infinite; z-index:0;}
+    @keyframes float{0%{transform:translateY(0) rotate(18deg)}50%{transform:translateY(-10px) rotate(22deg)}100%{transform:translateY(0) rotate(18deg)}}
+    .scorebox{display:flex; gap:12px; align-items:center; z-index:2}
+    .team{display:flex; flex-direction:column; gap:6px; align-items:center; width:120px}
+    .team .name{font-weight:700; font-size:14px}
+    .team .city{font-size:11px;color:var(--muted)}
+    .score{background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02)); border-radius:12px; padding:10px 16px; font-weight:800; font-size:36px; min-width:88px; text-align:center; border: 1px solid rgba(255,255,255,0.04); box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 18px rgba(118,240,255,0.03) inset; color:var(--accent1);}
+    .meta{display:flex; gap:12px; align-items:center; color:var(--muted); font-size:13px; margin-top:8px;}
+    .side-panel{display:flex; flex-direction:column; gap:12px;}
+    .panel{background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:18px; border:1px solid var(--glass-border); box-shadow: var(--glow);}
+    .games-list{ display:flex; flex-direction:column; gap:8px; }
+    .game{ display:flex; justify-content:space-between; padding:10px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); cursor:pointer; transition:transform .14s;}
+    .game:hover{transform:translateY(-4px)}
+    .game .left{display:flex;gap:12px;align-items:center}
+    .badge{ background:linear-gradient(90deg,var(--accent1),var(--accent2)); padding:6px 10px; border-radius:999px; color:#041017; font-weight:700;font-size:12px; box-shadow: 0 6px 18px rgba(118,240,255,0.06); }
+    .content{ padding:10px 28px 80px; display:grid; grid-template-columns: 1fr 420px; gap:28px; }
+    .roster-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
+    .roster-column h3{margin:0 0 10px; font-size:16px; color:var(--muted)}
+    .player-card{ display:flex; gap:12px; align-items:center; padding:10px; border-radius:10px; transition:transform .16s, box-shadow .16s; border:1px solid rgba(255,255,255,0.03); background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); }
+    .player-card:hover{transform:translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,0.6)}
+    .p-avatar{ min-width:54px; min-height:54px; width:54px;height:54px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); font-weight:800; font-size:16px; color:var(--muted); }
+    .p-info{flex:1}
+    .p-info .p-name{font-weight:700}
+    .p-info .p-pos{font-size:12px;color:var(--muted)}
+    .p-number{ font-weight:800; color:rgba(191,255,77,0.95); font-size:13px; min-width:36px; text-align:right; }
+    .timeline{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+    .event{ display:flex; justify-content:space-between; padding:10px; border-radius:8px; background: linear-gradient(90deg, rgba(255,255,255,0.01), transparent); border:1px solid rgba(255,255,255,0.02); color:var(--muted); font-size:13px; }
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(1,4,8,0.6); z-index:80; padding:20px; }
+    .modal.open{display:flex}
+    .modal-card{ width:min(720px,96%); border-radius:14px; padding:22px; background:linear-gradient(180deg, #071018, #0e1a22); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 30px 80px rgba(0,0,0,0.7); }
+    .modal-top{display:flex; gap:18px; align-items:center}
+    .close{margin-left:auto; background:transparent; border:0; color:var(--muted); font-weight:800; font-size:20px; cursor:pointer}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+    @media (max-width:1100px){
+      .hero{grid-template-columns: 1fr}
+      .content{grid-template-columns: 1fr}
+      .roster-grid{grid-template-columns: repeat(1, 1fr)}
+      .site-title h1{font-size:18px}
+    }
+    .sparkle{ position:absolute; right:16px; top:12px; width:8px;height:8px;border-radius:50%; background:linear-gradient(90deg,var(--accent1),var(--accent2)); filter:blur(6px); animation:blink 2.4s infinite; }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo" title="Mustangs">
+        <img src="mustangs_logo.png" alt="Mustangs logo">
+      </div>
+      <div class="site-title">
+        <h1>Grand Haven Mustangs</h1>
+        <p>2025 Schedule (mirrors Detroit Lions opponents)</p>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Primary">
+      <button class="btn" onclick="scrollToSection('games')">Games</button>
+      <button class="btn" onclick="scrollToSection('roster')">Roster</button>
+      <button class="btn" onclick="scrollToSection('stats')">Stats</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <div style="display:flex;align-items:center;gap:14px;z-index:2">
+          <div style="flex:1">
+            <div class="scorebox" aria-hidden="true">
+              <div class="team">
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div style="width:40px;height:40px;border-radius:8px;overflow:hidden;background:linear-gradient(45deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900;color:#041017">GM</div>
+                  <div>
+                    <div class="name">Mustangs</div>
+                    <div class="city" style="font-size:12px">Grand Haven, MI</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="score" id="mustangs-score">21</div>
+
+              <div style="width:140px;text-align:center">
+                <div class="team">
+                  <div class="name" style="font-size:14px">Opponent</div>
+                  <div class="city" style="font-size:12px;color:var(--muted)">NFL Team</div>
+                </div>
+                <div style="height:6px"></div>
+                <div class="score" id="opp-score" style="font-size:26px">17</div>
+              </div>
+            </div>
+
+            <div class="meta" style="margin-top:18px">
+              <div class="badge" id="game-status">SEASON</div>
+              <div id="game-clock">Detroit Lions 2025 (official opponents)</div>
+              <div style="margin-left:auto;color:var(--muted)">Source: Official Lions schedule</div>
+            </div>
+          </div>
+
+          <div style="width:160px; text-align:right; z-index:2">
+            <div style="font-weight:800; font-size:13px; color:var(--muted)">Next Game</div>
+            <div style="margin-top:6px; display:flex; gap:6px; justify-content:flex-end; align-items:center">
+              <div style="text-align:right">
+                <div style="font-weight:800" id="next-date">TBD</div>
+                <div style="color:var(--muted);font-size:12px" id="next-meta">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sparkle"></div>
+      </div>
+
+      <aside class="side-panel">
+        <div class="panel">
+          <h4 style="margin:0 0 10px">Lions-based Schedule</h4>
+          <div class="games-list" id="games"></div>
+        </div>
+
+        <div class="panel">
+          <h4 style="margin:0 0 8px">Team Highlights</h4>
+          <div style="color:var(--muted); font-size:13px; line-height:1.5">
+            • This demo uses the Detroit Lions 2025 opponents (official schedule).<br>
+            • Click any game for quick details. Click players for a modal.
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="content">
+      <div class="panel" id="roster">
+        <h2 style="margin-top:0">Roster</h2>
+        <p style="color:var(--muted);margin-top:6px">Ordered by Defense, Offense, Special Teams.</p>
+
+        <div class="roster-grid" id="roster-grid" style="margin-top:14px"></div>
+      </div>
+
+      <aside>
+        <div class="panel" id="stats">
+          <h3 style="margin-top:0">Live Box & Events</h3>
+          <div style="display:flex; gap:12px; margin-top:12px">
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--muted)">Record</div>
+              <div style="font-weight:900;font-size:20px;margin-top:6px" id="record">—</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--muted)">Points For</div>
+              <div style="font-weight:900;font-size:20px;margin-top:6px" id="points-for">—</div>
+            </div>
+          </div>
+
+          <div class="timeline" id="events"></div>
+
+          <div style="margin-top:16px">
+            <button class="btn" onclick="simulateScore()">Simulate Score Change</button>
+            <button class="btn" onclick="animateScoreBurst()" style="margin-left:6px">Big Play!</button>
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+
+        <div class="panel">
+          <h3 style="margin-top:0">Quick Links</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+            <button class="btn" onclick="alert('Open depth chart (demo)')">Depth Chart</button>
+            <button class="btn" onclick="alert('Open team analytics (demo)')">Analytics</button>
+            <button class="btn" onclick="alert('Open media gallery (demo)')">Media</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      Grand Haven Mustangs · Detroit Lions 2025 opponents used for Games list. (official schedule). :contentReference[oaicite:1]{index=1}
+    </footer>
+  </main>
+
+  <!-- Player Modal -->
+  <div class="modal" id="player-modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="player-title">
+      <div class="modal-top">
+        <div id="modal-avatar" style="width:96px;height:96px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900;color:#041017;font-size:28px"></div>
+        <div>
+          <div id="player-title" style="font-weight:900;font-size:20px"></div>
+          <div id="player-sub" style="color:var(--muted);margin-top:4px"></div>
+          <div style="margin-top:10px;color:var(--muted)" id="player-bio">Position, height, weight, notes...</div>
+        </div>
+        <button class="close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:12px">
+        <div style="flex:1">
+          <div style="font-size:13px;color:var(--muted)">Stats</div>
+          <div style="margin-top:8px;font-weight:800" id="player-stats">—</div>
+        </div>
+        <div style="width:160px;text-align:right">
+          <div style="font-size:13px;color:var(--muted)">Jersey</div>
+          <div style="font-weight:900;font-size:28px;color:var(--accent2)" id="player-number">#0</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px; text-align:right">
+        <button class="btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Data: roster (same as you provided), and games replaced with Detroit Lions 2025 schedule (official). Source: DetroitLions.com schedule page. */
+    const DATA = {
+      roster: [
+        // defense
+        {num:44, name:"Mike Hamma", pos:"CB", group:"defense"},
+        {num:54, name:"Mike Tyson", pos:"SAM", group:"defense"},
+        {num:92, name:"Dustin Hilton", pos:"LEDG", group:"defense"},
+        {num:96, name:"Tucker Brodie", pos:"REDG", group:"defense"},
+        {num:6, name:"Jason Hughes", pos:"MIKE", group:"defense"},
+        {num:99, name:"Justin Peoples", pos:"WILL", group:"defense"},
+        {num:58, name:"Albert Colemen", pos:"DT", group:"defense"},
+        {num:26, name:"Emannuel Franklin", pos:"FS", group:"defense"},
+        {num:32, name:"Arthur Bell", pos:"FS", group:"defense"},
+        {num:14, name:"Terry Watson", pos:"SS", group:"defense"},
+        {num:21, name:"John Davis", pos:"CB", group:"defense"},
+        {num:40, name:"Damion Link", pos:"SAM", group:"defense"},
+
+        // offense
+        {num:79, name:"Ronald McDonald", pos:"LT", group:"offense"},
+        {num:65, name:"PJ Wiender", pos:"LT", group:"offense"},
+        {num:66, name:"Bo Dennis", pos:"LG", group:"offense"},
+        {num:64, name:"Anthony Walker", pos:"C", group:"offense"},
+        {num:70, name:"Marcus Crowell", pos:"RG", group:"offense"},
+        {num:78, name:"Jesse Ward", pos:"RT", group:"offense"},
+        {num:8, name:"Jack Patrick McAndrew", pos:"QB", group:"offense"},
+        {num:2, name:"Sam Pickett", pos:"QB", group:"offense"},
+        {num:35, name:"Joseph Dunnigan", pos:"HB", group:"offense"},
+        {num:43, name:"Rustem Hoxha", pos:"HB", group:"offense"},
+        {num:27, name:"Pete Rivers", pos:"HB", group:"offense"},
+        {num:42, name:"Pat Richards", pos:"FB", group:"offense"},
+        {num:69, name:"Jack McAndrews", pos:"TE", group:"offense"},
+        {num:46, name:"Deandre Wilson", pos:"TE", group:"offense"},
+        {num:13, name:"William Dukes", pos:"WR", group:"offense"},
+        {num:7, name:"Tre Hutchinson", pos:"WR", group:"offense"},
+        {num:16, name:"Joe Perez", pos:"WR", group:"offense"},
+
+        // special teams
+        {num:68, name:"Philip Sophagus", pos:"Kicker", group:"special"},
+      ],
+
+      /* Official Detroit Lions 2025 schedule (preseason + regular). Data from DetroitLions.com schedule page. */
+      games: [
+        {week:"HOF", date:"2025-07-31", opponent:"Los Angeles Chargers", place:"Home (Hall of Fame)", time:"8:00 PM", status:"FINAL", scoreHome:7, scoreAway:34},
+        {week:"Pre1", date:"2025-08-08", opponent:"Atlanta Falcons", place:"Away (Mercedes-Benz Stadium)", time:"", status:"FINAL", scoreHome:17, scoreAway:10},
+        {week:"Pre2", date:"2025-08-16", opponent:"Miami Dolphins", place:"Home", time:"", status:"FINAL", scoreHome:17, scoreAway:24},
+        {week:"Pre3", date:"2025-08-23", opponent:"Houston Texans", place:"Home", time:"", status:"FINAL", scoreHome:7, scoreAway:26},
+
+        // Regular season (official listing)
+        {week:"1", date:"2025-09-07", opponent:"Green Bay Packers", place:"Away (Lambeau Field)", time:"4:25 PM", status:"FINAL", scoreHome:13, scoreAway:27},
+        {week:"2", date:"2025-09-14", opponent:"Chicago Bears", place:"Home (Ford Field)", time:"1:00 PM", status:"FINAL", scoreHome:52, scoreAway:21},
+        {week:"3", date:"2025-09-22", opponent:"Baltimore Ravens", place:"Away (M&T Bank Stadium)", time:"8:15 PM", status:"FINAL", scoreHome:38, scoreAway:30},
+        {week:"4", date:"2025-09-28", opponent:"Cleveland Browns", place:"Home (Ford Field)", time:"1:00 PM", status:"FINAL", scoreHome:34, scoreAway:10},
+        {week:"5", date:"2025-10-05", opponent:"Cincinnati Bengals", place:"Away (Paycor Stadium)", time:"4:25 PM", status:"FINAL", scoreHome:37, scoreAway:24},
+        {week:"6", date:"2025-10-12", opponent:"Kansas City Chiefs", place:"Away (Arrowhead Stadium)", time:"8:20 PM", status:"FINAL", scoreHome:17, scoreAway:30},
+        {week:"7", date:"2025-10-20", opponent:"Tampa Bay Buccaneers", place:"Home (Ford Field)", time:"7:00 PM", status:"FINAL", scoreHome:24, scoreAway:9},
+        {week:"8", date:"2025-10-26", opponent:"BYE", place:"—", time:"—", status:"BYE"},
+        {week:"9", date:"2025-11-02", opponent:"Minnesota Vikings", place:"Home (Ford Field)", time:"", status:"FINAL", scoreHome:24, scoreAway:27},
+        {week:"10", date:"2025-11-09", opponent:"Washington Commanders", place:"Away (Northwest Stadium)", time:"", status:"FINAL", scoreHome:44, scoreAway:22},
+        {week:"11", date:"2025-11-16", opponent:"Philadelphia Eagles", place:"Away (Lincoln Financial Field)", time:"", status:"FINAL", scoreHome:9, scoreAway:16},
+
+        // Remaining as listed (times shown for scheduled games; final results will appear on official site as seasons progress)
+        {week:"12", date:"2025-11-23", opponent:"New York Giants", place:"Home (Ford Field)", time:"1:00 PM EST", status:"SCHEDULED"},
+        {week:"13", date:"2025-11-27", opponent:"Green Bay Packers", place:"Home (Ford Field)", time:"1:00 PM EST (Thanksgiving)", status:"SCHEDULED"},
+        {week:"14", date:"2025-12-04", opponent:"Dallas Cowboys", place:"Home (Ford Field)", time:"8:15 PM EST", status:"SCHEDULED"},
+        {week:"15", date:"2025-12-14", opponent:"Los Angeles Rams", place:"Away (SoFi Stadium)", time:"4:25 PM EST", status:"SCHEDULED"},
+        {week:"16", date:"2025-12-21", opponent:"Pittsburgh Steelers", place:"Home (Ford Field)", time:"4:25 PM EST", status:"SCHEDULED"},
+        {week:"17", date:"2025-12-25", opponent:"Minnesota Vikings", place:"Away (U.S. Bank Stadium)", time:"4:30 PM EST", status:"SCHEDULED"},
+        {week:"18", date:"TBD", opponent:"Chicago Bears", place:"Away (Soldier Field)", time:"TBD", status:"TBD"}
+      ]
+    };
+
+    /* Helpers */
+    function el(tag, attrs={}, children=[]){
+      const e = document.createElement(tag);
+      for(const k in attrs){
+        if(k.startsWith('on') && typeof attrs[k] === 'function') e.addEventListener(k.substring(2), attrs[k]);
+        else if(k==='html') e.innerHTML = attrs[k];
+        else e.setAttribute(k, attrs[k]);
+      }
+      if(typeof children === 'string') e.textContent = children;
+      else for(const c of children) e.appendChild(c);
+      return e;
+    }
+
+    /* Render games (from DATA.games) */
+    function renderGames(){
+      const container = document.getElementById('games');
+      container.innerHTML = '';
+      DATA.games.forEach(g=>{
+        const game = el('div',{class:'game', role:'button'});
+        const left = el('div',{class:'left'});
+        const badgeText = g.place && g.place!=='—' ? (g.place.includes('Home') ? 'Home' : (g.place.includes('Away') ? 'Away' : g.place)) : (g.week || '');
+        const badge = el('div',{class:'badge'}, [badgeText]);
+        left.appendChild(badge);
+        const info = el('div',{},[
+          el('div',{html:`<strong>${g.opponent}</strong>`}),
+          el('div',{style:'font-size:12px;color:var(--muted)', html:`${g.date} · ${g.time || ''}`})
+        ]);
+        left.appendChild(info);
+
+        const right = el('div',{style:'display:flex;flex-direction:column;align-items:flex-end;justify-content:center'});
+        const status = el('div',{style:'font-weight:800'}, [g.status || '—']);
+        const score = el('div',{style:'font-size:13px;color:var(--muted)'}, [
+          (g.scoreHome != null && g.scoreAway != null) ? `${g.scoreHome} - ${g.scoreAway}` : (g.status === 'BYE' ? 'BYE' : '—')
+        ]);
+
+        right.appendChild(status);
+        right.appendChild(score);
+
+        game.appendChild(left);
+        game.appendChild(right);
+
+        game.addEventListener('click', ()=> openGameDetail(g));
+        container.appendChild(game);
+      });
+
+      // set next game quick info (first scheduled future game)
+      const next = DATA.games.find(g=> g.status && (g.status==='SCHEDULED' || g.status==='TBD' || g.status==='BYE' || (!g.scoreHome && !g.scoreAway)));
+      if(next){
+        document.getElementById('next-date').textContent = next.date;
+        document.getElementById('next-meta').textContent = `${next.opponent} · ${next.time || next.place}`;
+      }
+    }
+
+    function openGameDetail(g){
+      const score = (g.scoreHome != null && g.scoreAway != null) ? `${g.scoreHome} - ${g.scoreAway}` : '—';
+      alert(`Week ${g.week || ''}\n${g.opponent}\n${g.date} · ${g.time || ''}\n${g.place}\nStatus: ${g.status}\nScore: ${score}`);
+    }
+
+    /* Roster render */
+    function renderRoster(){
+      const grid = document.getElementById('roster-grid');
+      grid.innerHTML = '';
+
+      const groups = {
+        defense: {title:'Defense', players: DATA.roster.filter(p=>p.group==='defense').sort((a,b)=>a.num-b.num)},
+        offense: {title:'Offense', players: DATA.roster.filter(p=>p.group==='offense').sort((a,b)=>a.num-b.num)},
+        special: {title:'Special Teams', players: DATA.roster.filter(p=>p.group==='special').sort((a,b)=>a.num-b.num)}
+      };
+
+      for(const k of ['defense','offense','special']){
+        const col = el('div',{class:'roster-column'});
+        col.appendChild(el('h3',{}, [groups[k].title]));
+        const list = el('div',{}, []);
+        groups[k].players.forEach(p=>{
+          const card = el('div',{class:'player-card', role:'button'});
+          const avatar = el('div',{class:'p-avatar'}, [String(p.num).padStart(2,'0')]);
+          const info = el('div',{class:'p-info'}, []);
+          info.appendChild(el('div',{class:'p-name'}, [p.name]));
+          info.appendChild(el('div',{class:'p-pos'}, [p.pos]));
+          const num = el('div',{class:'p-number'}, [`#${p.num}`]);
+          card.appendChild(avatar);
+          card.appendChild(info);
+          card.appendChild(num);
+          card.addEventListener('click', ()=> openPlayerModal(p));
+          list.appendChild(card);
+        });
+        col.appendChild(list);
+        grid.appendChild(col);
+      }
+    }
+
+    /* Modal */
+    function openPlayerModal(p){
+      const modal = document.getElementById('player-modal');
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      document.getElementById('modal-avatar').textContent = p.name.split(' ').map(x=>x[0]).slice(0,2).join('');
+      document.getElementById('player-title').textContent = p.name;
+      document.getElementById('player-sub').textContent = `${p.pos} · Grand Haven Mustangs`;
+      document.getElementById('player-bio').textContent = `Jersey #${p.num}. Key role: ${p.pos} — team player with great instincts.`;
+      document.getElementById('player-stats').textContent = `Games: 8 · Tackles / Receptions / Yards: — (demo)`;
+      document.getElementById('player-number').textContent = `#${p.num}`;
+    }
+    function closeModal(){ document.getElementById('player-modal').classList.remove('open'); document.getElementById('player-modal').setAttribute('aria-hidden','true'); }
+    window.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeModal(); });
+
+    /* events and animations (same as before) */
+    function renderEvents(){
+      const evc = document.getElementById('events');
+      evc.innerHTML = '';
+      const events = [
+        {time:'Q4 02:13', text:'TD — Jack McAndrews (8 yd pass)'},
+        {time:'Q3 11:02', text:'INT — John Davis returned 23 yds'},
+        {time:'Q2 05:39', text:'FG — Philip Sophagus 45 yd'},
+        {time:'Q1 12:10', text:'Fumble recovery — Arthur Bell'}
+      ];
+      events.forEach(e=>{
+        const row = el('div',{class:'event'}, [
+          el('div',{}, [e.text]),
+          el('div',{}, [e.time])
+        ]);
+        evc.appendChild(row);
+      });
+    }
+
+    function simulateScore(){
+      const s1 = document.getElementById('mustangs-score');
+      const s2 = document.getElementById('opp-score');
+      const v1 = parseInt(s1.textContent) || 0;
+      const v2 = parseInt(s2.textContent) || 0;
+      const delta = Math.floor(Math.random()*8);
+      const new1 = v1 + delta;
+      const new2 = Math.max(0, v2 - Math.floor(Math.random()*3));
+      animateScoreFlip(s1, v1, new1);
+      animateScoreFlip(s2, v2, new2);
+      const evc = document.getElementById('events');
+      const msg = el('div',{class:'event'}, [el('div',{}, [`Score update: ${new1} - ${new2}`]), el('div',{}, ['Now'])]);
+      evc.prepend(msg);
+    }
+
+    function animateScoreFlip(node, from, to){
+      const start = from;
+      const end = to;
+      const frames = 12;
+      let i=0;
+      const diff = end - start;
+      const interval = setInterval(()=>{
+        i++;
+        const cur = Math.round(start + (diff * (i/frames)));
+        node.textContent = cur;
+        node.style.transform = `rotateX(${(1 - i/frames) * 45}deg)`;
+        node.style.opacity = 0.92 + (i/frames)*0.08;
+        if(i>=frames) {
+          clearInterval(interval);
+          node.style.transform = '';
+          node.style.opacity = '';
+        }
+      }, 30);
+    }
+
+    function animateScoreBurst(){
+      const s = document.getElementById('mustangs-score');
+      const orig = parseInt(s.textContent) || 0;
+      const newVal = orig + (Math.random()>0.5 ? 6 : 3);
+      animateScoreFlip(s, orig, newVal);
+      const burst = document.createElement('div');
+      burst.style.position='absolute';
+      burst.style.left='40%';
+      burst.style.top='130px';
+      burst.style.width='220px';
+      burst.style.height='60px';
+      burst.style.borderRadius='12px';
+      burst.style.background='linear-gradient(90deg,var(--accent1),var(--accent2))';
+      burst.style.opacity='0.12';
+      burst.style.filter='blur(20px)';
+      burst.style.pointerEvents='none';
+      document.body.appendChild(burst);
+      setTimeout(()=> burst.style.opacity='0', 80);
+      setTimeout(()=> burst.remove(), 600);
+    }
+
+    function scrollToSection(id){
+      const el = document.getElementById(id);
+      if(!el) { window.scrollTo({top:200, behavior:'smooth'}); return; }
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    // Init render
+    renderGames();
+    renderRoster();
+    renderEvents();
+
+    // entrance animations
+    document.querySelectorAll('.panel, .hero-card').forEach((p,i)=>{
+      p.style.opacity=0; p.style.transform='translateY(8px)';
+      setTimeout(()=>{ p.style.transition='all .6s cubic-bezier(.2,.9,.2,1)'; p.style.opacity=1; p.style.transform='translateY(0)'; }, 80 + i*80);
+    });
+
+    // click outside modal closes
+    document.getElementById('player-modal').addEventListener('click', (e)=>{ if(e.target.id === 'player-modal') closeModal(); });
+  </script>
+</body>
+</html>
